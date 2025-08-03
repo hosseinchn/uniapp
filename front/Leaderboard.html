@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Enginuity - رتبه‌بندی</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- فونت‌آسم و استایل مثل قبل -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* 📌 همون استایل قبلی شما */
+    /* ... استایل‌هاتون اینجا ... */
+    body { background-color: #f5f7fb; padding: 20px; padding-bottom: 70px; font-family: Arial, sans-serif;}
+    .header {display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+    .header h1 {color:#1a237e;font-size:24px;}
+    .back-button {color:#4e5fe0;text-decoration:none;display:flex;align-items:center;}
+    .filter-container {display:flex;gap:10px;margin-bottom:20px;overflow-x:auto;padding-bottom:5px;}
+    .filter-button {background:white;border:1px solid #ddd;border-radius:20px;padding:8px 15px;font-size:14px;white-space:nowrap;}
+    .filter-button.active {background:#4e5fe0;color:white;border-color:#4e5fe0;}
+    .user-position {background:#4e5fe0;color:white;border-radius:12px;padding:15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+    .position-info {display:flex;align-items:center;}
+    .position-number {font-size:18px;font-weight:bold;margin-left:15px;background:white;color:#4e5fe0;width:30px;height:30px;border-radius:50%;display:flex;justify-content:center;align-items:center;}
+    .position-name {font-weight:bold;}
+    .position-points {font-weight:bold;}
+    .leaderboard-container {background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+    .leaderboard-item {display:flex;justify-content:space-between;align-items:center;padding:15px;border-bottom:1px solid #eee;}
+    .leaderboard-item:last-child {border-bottom:none;}
+    .leaderboard-rank {font-weight:bold;margin-left:15px;color:#333;width:30px;text-align:center;}
+    .leaderboard-rank.top {background:#FFD700;color:white;width:30px;height:30px;border-radius:50%;display:flex;justify-content:center;align-items:center;}
+    .leaderboard-rank.top2 {background:#C0C0C0;color:white;width:30px;height:30px;border-radius:50%;display:flex;justify-content:center;align-items:center;}
+    .leaderboard-rank.top3 {background:#CD7F32;color:white;width:30px;height:30px;border-radius:50%;display:flex;justify-content:center;align-items:center;}
+    .leaderboard-user {display:flex;align-items:center;flex:1;}
+    .user-avatar {width:40px;height:40px;border-radius:50%;background:#f0f4ff;display:flex;justify-content:center;align-items:center;margin-left:10px;}
+    .user-avatar i {color:#4e5fe0;}
+    .user-name {font-weight:bold;color:#333;}
+    .leaderboard-score {font-weight:bold;color:#4e5fe0;}
+    .bottom-nav {position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:space-around;padding:15px 0;box-shadow:0 -2px 10px rgba(0,0,0,0.1);}
+    .nav-item {display:flex;flex-direction:column;align-items:center;color:#777;text-decoration:none;font-size:12px;}
+    .nav-item i {font-size:24px;margin-bottom:5px;}
+    .nav-item.active {color:#4e5fe0;}
+  </style>
+</head>
+<body>
+  <div class="header">
+      <a href="profile.html" class="back-button">
+          <i class="fas fa-arrow-right"></i>
+      </a>
+      <h1>رتبه‌بندی</h1>
+      <div></div>
+  </div>
+  <div class="filter-container">
+      <button class="filter-button active">هفتگی</button>
+      <button class="filter-button">ماهانه</button>
+      <button class="filter-button">کلی</button>
+      <button class="filter-button">دوستان</button>
+      <button class="filter-button">دوره: اصول برنامه‌نویسی</button>
+  </div>
+  <div class="user-position" id="user-position" style="display:none;"></div>
+  <div class="leaderboard-container" id="leaderboard"></div>
+  <div class="bottom-nav">
+      <a href="dashboard.html" class="nav-item">
+          <i class="fas fa-home"></i>
+          <span>خانه</span>
+      </a>
+      <a href="courses.html" class="nav-item">
+          <i class="fas fa-book"></i>
+          <span>دوره‌ها</span>
+      </a>
+      <a href="search.html" class="nav-item">
+          <i class="fas fa-search"></i>
+          <span>جستجو</span>
+      </a>
+      <a href="profile.html" class="nav-item active">
+          <i class="fas fa-user"></i>
+          <span>پروفایل</span>
+      </a>
+  </div>
+  <script>
+    // تابع امتیازدهی به کاربر: (شما می‌توانید بر اساس رکوردهای بازی و دستاوردها و ... هم امتیاز را بسازید)
+    function calculateUserPoints(user) {
+      // جمع کل valueهای progress (می‌تونی هر منطق دیگری بزنی)
+      let sum = 0;
+      if (user.progress && Array.isArray(user.progress)) {
+        sum = user.progress.reduce((a, p) => a + (p.value || 0), 0);
+      }
+      // می‌توانی از achievements/gameRecords/quizRecords/etc هم امتیاز بدهی
+      return sum;
+    }
+
+    function getUserIdFromStorage() {
+      return localStorage.getItem('userId') || null;
+    }
+
+    function formatRankingNum(idx) {
+      if(idx === 0) return 'top';
+      if(idx === 1) return 'top2';
+      if(idx === 2) return 'top3';
+      return '';
+    }
+
+    // واکشی و ساخت جدول رنکینگ
+    fetch('http://localhost:3001/users')
+      .then(res => res.json())
+      .then(users => {
+        // ساخت آرایه شامل نام، آواتار (یا icon)، امتیاز و id
+        const leaderboard = users.map(u => ({
+          id: u.id,
+          name: u.fullname || u.username,
+          avatar: u.avatar,
+          points: calculateUserPoints(u)
+        }))
+        // به‌ترتیب امتیاز نزولی
+        .sort((a, b) => b.points - a.points);
+
+        // نمایش رتبه خود کاربر
+        const userId = getUserIdFromStorage();
+        if(userId) {
+          const userIdx = leaderboard.findIndex(u => u.id === userId);
+          if (userIdx >= 0) {
+            const you = leaderboard[userIdx];
+            document.getElementById("user-position").style.display = '';
+            document.getElementById("user-position").innerHTML = `
+              <div class="position-info">
+                <div class="position-number">${userIdx + 1}</div>
+                <div class="position-name">جایگاه شما</div>
+              </div>
+              <div class="position-points">${you.points} امتیاز</div>
+            `;
+          }
+        }
+
+        // ساخت جدول رنکینگ
+        let html = '';
+        leaderboard.forEach((u, idx) => {
+          html += `
+            <div class="leaderboard-item">
+              <div class="leaderboard-user">
+                <div class="leaderboard-rank ${formatRankingNum(idx)}">${idx + 1}</div>
+                <div class="user-avatar">
+                  ${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;border-radius:50%;">`: `<i class="fas fa-user"></i>`}
+                </div>
+                <div class="user-name">${u.name}</div>
+              </div>
+              <div class="leaderboard-score">${u.points} امتیاز</div>
+            </div>
+          `;
+        });
+        document.getElementById('leaderboard').innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById('leaderboard').innerHTML = `<div style="color:#c33;padding:16px;">خطا در لود اطلاعات رتبه‌بندی</div>`;
+      });
+  </script>
+</body>
+</html>

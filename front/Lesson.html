@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enginuity - درس</title>
+    <style>
+        body { background: #f5f7fb; min-height: 100vh; padding-bottom: 90px; }
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 20px 8px 20px; background: #fff;
+        }
+        .header h1 { font-size: 20px; color: #1a237e; }
+        .header a { color: #4e5fe0; text-decoration: none; font-size: 22px; }
+        .lesson-container {
+            max-width: 810px; margin: 24px auto; background: #fff;
+            border-radius: 16px; padding: 26px 20px; box-shadow: 0 4px 16px rgba(78,95,224,0.09);
+        }
+        .lesson-title { font-size: 23px; font-weight: bold; color: #3949ab; margin-bottom: 15px; }
+        .lesson-meta { color: #666; font-size: 14px; margin-bottom: 8px; }
+        .lesson-content { font-size: 16px; color: #222; margin-bottom: 19px; line-height: 1.9; }
+        .lesson-media video, .lesson-media img { max-width: 100%; border-radius: 11px; margin-bottom: 10px; }
+        .progress-btn {
+            display: inline-block; background: #4e5fe0; color: #fff;
+            border: none; border-radius: 8px; padding: 10px 26px; font-size: 16px;
+            font-weight: bold; cursor: pointer; margin-top: 5px; transition: background 0.2s;
+        }
+        .progress-btn.done { background: #388e3c; }
+        .progress-hint {
+            display:inline-block; margin-right: 8px; font-size:14px; color:#444; vertical-align:2px;
+        }
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex;
+            justify-content: space-around; padding: 15px 0 9px; box-shadow: 0 -2px 10px rgba(0,0,0,0.09); z-index: 10002;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #7d85b0; text-decoration: none; font-size: 13px; transition: color .2s;}
+        .nav-item i { font-size: 23px; margin-bottom: 4px;}
+        .nav-item.active { color: #4e5fe0;}
+        @media (max-width:620px){ .lesson-container{ padding:15px 6px; } }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <a href="#" id="backToCourse" title="بازگشت"><i class="fas fa-arrow-right"></i></a>
+        <h1>درس</h1>
+        <div></div>
+    </div>
+    <div class="lesson-container" id="lessonBlock" style="display:none;">
+        <!-- محتوا پویا بارگذاری می‌شود -->
+    </div>
+    <div style="text-align:center; color:#888; padding:50px 0;" id="loadingBox">در حال بارگذاری...</div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>خانه</span></a>
+        <a href="courses.html" class="nav-item active"><i class="fas fa-book"></i><span>دوره‌ها</span></a>
+        <a href="search.html" class="nav-item"><i class="fas fa-search"></i><span>جستجو</span></a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>پروفایل</span></a>
+    </div>
+<script>
+// Helper: گرفتن پارامترها از URL
+function getQueryParam(p) {
+    return new URLSearchParams(window.location.search).get(p);
+}
+const courseKey = getQueryParam('course');
+const lessonId = getQueryParam('id');
+
+if(!localStorage.getItem('userId')){
+    window.location.href = "LoginPage.html";
+}
+
+// مسیر بازگشت
+if (courseKey) {
+    document.getElementById("backToCourse").href = "course-lessons.html?course=" + courseKey;
+} else {
+    document.getElementById("backToCourse").href = "courses.html";
+}
+
+// API فرضی: course در db.json دارای lessons است
+Promise.all([
+    fetch(`http://localhost:3001/courses?key=${courseKey}`),
+    fetch(`http://localhost:3001/users/${localStorage.getItem('userId')}`)
+])
+.then(([res1, res2])=> Promise.all([res1.json(), res2.json()]))
+.then(([courses, user])=>{
+    if(!courses.length) throw new Error("دوره یافت نشد.");
+    const course = courses[0];
+    const lesson = (course.lessons||[]).find(ls=>String(ls.id)===String(lessonId));
+    if(!lesson) throw new Error("درس یافت نشد.");
+
+    renderLesson(lesson, course, user);
+}).catch(err=>{
+    document.getElementById("loadingBox").innerHTML = 'خطا در دریافت اطلاعات درس: '+err.message;
+});
+
+
+function renderLesson(lesson, course, user){
+    let isDone = false;
+    const userProg = (user.progress||[]).find(p=>p.courseKey===course.key);
+    if(userProg && userProg.lessonsDone) {
+        isDone = !!userProg.lessonsDone.find(lid=>String(lid)===String(lesson.id));
+    }
+    // UI
+    document.getElementById("lessonBlock").style.display = "block";
+    document.getElementById("loadingBox").style.display = "none";
+    document.getElementById("lessonBlock").innerHTML = `
+        <div class="lesson-title">${lesson.title}</div>
+        <div class="lesson-meta">${course.title} - درس ${lesson.id}</div>
+        <div class="lesson-content">${lesson.content || lesson.text || "هنوز محتوایی وارد نشده"}</div>
+        ${lesson.media ? `<div class="lesson-media">${renderMedia(lesson.media)}</div>` : ''}
+        <button class="progress-btn${isDone ? ' done' : ''}" id="btnMarkDone">
+            ${isDone ? '<i class="fas fa-check-circle"></i> این درس انجام شد'
+                     : '<i class="far fa-circle"></i> علامت به عنوان مطالعه‌شده'}
+        </button>
+        <span class="progress-hint">${isDone ? 'این درس قبلاً به عنوان خوانده‌شده ثبت شده است.' : ''}</span>
+    `;
+    document.getElementById("btnMarkDone").onclick = function() {
+        markLessonDone(course, lesson, user);
+    }
+}
+
+// نمایش ویدیو، عکس و ...
+function renderMedia(media){
+    if(Array.isArray(media)) return media.map(renderMedia).join('');
+    if(typeof media === 'string'){
+        if(media.endsWith('.mp4')) return `<video src="${media}" controls></video>`;
+        if(media.match(/\.(jpg|jpeg|png|gif)$/i)) return `<img src="${media}" alt="تصویر درس">`;
+    }
+    return '';
+}
+
+// ثبت پیشرفت درس فعلی برای کاربر
+function markLessonDone(course, lesson, user){
+    let progressArr = user.progress||[];
+    let courseProg = progressArr.find(p=>p.courseKey===course.key);
+    if(!courseProg){
+        // اگر هیچ پیشرفتی برای این دوره ثبت نشده، بسازش
+        courseProg = {courseKey: course.key, value:0, lessonsDone:[]};
+        progressArr.push(courseProg);
+    }
+    if(!courseProg.lessonsDone) courseProg.lessonsDone = [];
+    // اگر قبلا ثبت نشده بود
+    if(!courseProg.lessonsDone.find(lid=>String(lid)===String(lesson.id))){
+        courseProg.lessonsDone.push(lesson.id);
+        // آپدیت مقدار کلی value:
+        const fullCnt = (course.lessons||[]).length;
+        courseProg.value = Math.round((courseProg.lessonsDone.length/fullCnt)*100);
+        // ارسال PATCH به سرور:
+        fetch(`http://localhost:3001/users/${user.id}`,{
+            method: "PATCH",
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({progress: progressArr})
+        }).then(()=>{
+            // نمایش وضعیت جدید
+            document.getElementById("btnMarkDone").className = 'progress-btn done';
+            document.getElementById("btnMarkDone").innerHTML = '<i class="fas fa-check-circle"></i> این درس انجام شد';
+            document.querySelector('.progress-hint').innerText = 'این درس قبلاً به عنوان خوانده‌شده ثبت شده است.';
+        }).catch(()=>{
+            alert("خطا در ثبت پیشرفت. اتصال به سرور را بررسی کنید.");
+        });
+    }
+}
+
+</script>
+</body>
+</html>

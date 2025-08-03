@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enginuity - پروفایل</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background-color: #f5f7fb; padding: 20px; padding-bottom: 80px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+        .header h1 { color: #1a237e; font-size: 25px; }
+        .profile-section {
+            background-color: white; border-radius: 14px; padding: 22px 10px 20px 10px; margin-bottom: 24px;
+            box-shadow: 0 2px 10px rgba(78,95,224, 0.08);display:flex;flex-direction:column;align-items:center;
+        }
+        .profile-pic { width: 102px; height: 102px; border-radius: 50%; background-color: #4e5fe0;
+            display: flex; justify-content: center; align-items: center; margin-bottom: 18px; color: white; font-size: 46px;}
+        .username { font-size: 21px; font-weight: bold; margin-bottom: 7px; color: #1a237e;}
+        .user-email { color: #888; margin-bottom: 10px; font-size: 15px;}
+        .stats-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; width: 100%; margin: 16px 0;}
+        .stat-item { background-color: #f0f4ff; border-radius: 8px; padding: 15px 6px; text-align: center; }
+        .stat-value { font-size: 22px; font-weight: bold; color: #4e5fe0; margin-bottom: 4px;}
+        .stat-label { font-size: 12px; color: #666; }
+        .section-title { font-size: 17px; font-weight: bold; margin: 13px 0 12px; color: #1a237e;}
+        .achievements-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px;}
+        .achievement-item {
+            background-color: white; border-radius: 50%; width: 65px; height: 65px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 2px 8px rgba(34,52,224, 0.08); transition:box-shadow .20s;
+        }
+        .achievement-item i { font-size: 28px; color: #4e5fe0; }
+        .achievement-item.locked { opacity:.45; background-color:#e5e8fa;}
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: white;
+            display: flex; justify-content: space-around; padding: 15px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.10);}
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #777; text-decoration: none;
+            font-size: 13px; transition: color 0.18s;}
+        .nav-item i { font-size: 23px; margin-bottom: 4px;}
+        .nav-item.active { color: #4e5fe0; }
+        .logout-btn {
+            padding:8px 26px; border:none; background:#edf1fc; color: #3949ab;
+            border-radius:7px; cursor:pointer; font-weight:bold; font-size:15px;
+            box-shadow:0 1px 3px rgba(78,95,224,0.08);}
+        .logout-btn:hover { background: #e0e8fa;}
+        @media(max-width:650px) {
+            .profile-section{padding:14px 2vw;}
+            .achievements-container{gap:5px;}
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1>پروفایل</h1>
+        <button class="logout-btn" onclick="logout()">خروج</button>
+    </div>
+    <div class="profile-section">
+        <div class="profile-pic">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="username">...</div>
+        <div class="user-email">...</div>
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value" id="stat-courses">0</div>
+                <div class="stat-label">دوره‌ها</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-lessons">0</div>
+                <div class="stat-label">درس‌ها</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-achievements">0</div>
+                <div class="stat-label">دستاوردها</div>
+            </div>
+            <div class="stat-item">
+      <div class="stat-value" id="binary-game-record">۰</div>
+      <div class="stat-label">رکورد بازی دودویی</div>
+  </div>
+        </div>
+    </div>
+    <div class="section-title">دستاوردهای اخیر</div>
+    <div class="achievements-container" id="achievementsBox">
+        <!-- به صورت داینامیک پر می‌شود -->
+    </div>
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>خانه</span></a>
+        <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>دوره‌ها</span></a>
+        <a href="search.html" class="nav-item"><i class="fas fa-search"></i><span>جستجو</span></a>
+        <a href="profile.html" class="nav-item active"><i class="fas fa-user"></i><span>پروفایل</span></a>
+    </div>
+    <script>
+        // خروج
+        function logout(){
+            localStorage.removeItem("userId");
+            window.location.href = "LoginPage.html";
+        }
+
+        // لود و نمایش اطلاعات کاربر
+        window.onload = function() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        window.location.href = 'LoginPage.html';
+        return;
+    }
+    fetch(`http://localhost:3001/users/${userId}`)
+        .then(res => {
+            if (!res.ok) throw new Error('User not found');
+            return res.json();
+        })
+        .then(user => {
+            document.querySelector('.username').textContent = user.username || 'بدون نام';
+            document.querySelector('.user-email').textContent = user.email || 'فاقد ایمیل';
+            document.querySelectorAll('.stat-value')[0].textContent = user.courses ? user.courses.length : 0;
+            document.querySelectorAll('.stat-value')[1].textContent = user.lessons ? user.lessons.length : 0;
+            document.querySelectorAll('.stat-value')[2].textContent = user.achievements ? user.achievements.length : 0;
+            // اضافه کردن رکورد بازی دودویی
+            const binaryGameRecord = (user.records && user.records.binaryAction) ? user.records.binaryAction : 0;
+            document.getElementById('binary-game-record').textContent = binaryGameRecord.toLocaleString('fa-IR');
+            
+            // دستاوردها
+            const achContainer = document.querySelector('.achievements-container');
+            achContainer.innerHTML = '';
+            if (user.achievements && user.achievements.length > 0) {
+                user.achievements.forEach(a => {
+                    achContainer.innerHTML += `<div class="achievement-item" title="${a.name}">
+                        <i class="fas fa-${a.icon || 'star'}"></i></div>`;
+                });
+            } else {
+                achContainer.innerHTML = "<span style='color:#888;text-align:center'>هنوز هیچ دستاوردی ثبت نشده است.</span>"
+            }
+        })
+        .catch(err => {
+            alert("کاربر یافت نشد یا خطا در اتصال به سرور!\n" + err.message);
+            window.location.href = 'LoginPage.html';
+        });
+};
+
+    </script>
+</body>
+</html>

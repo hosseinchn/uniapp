@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enginuity - داشبورد</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f7fb;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #1a237e;
+            font-size: 24px;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .menu-item {
+            background-color: #4e5fe0;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            height: 120px;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .menu-item:hover {
+            transform: translateY(-3px);
+            background-color: #3949ab;
+        }
+        .menu-item i {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+        .menu-item span {
+            font-weight: bold;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #777;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .nav-item i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .nav-item.active {
+            color: #4e5fe0;
+        }
+    </style>
+    <!-- برای استفاده از آیکون‌ها -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1>خانه</h1>
+    </div>
+
+    <div class="menu-grid">
+        <a href="profile.html" class="menu-item">
+            <i class="fas fa-user"></i>
+            <span>پروفایل</span>
+        </a>
+        <a href="courses.html" class="menu-item">
+            <i class="fas fa-book"></i>
+            <span>دوره‌ها</span>
+        </a>
+        <a href="achievements.html" class="menu-item">
+            <i class="fas fa-award"></i>
+            <span>دستاوردها</span>
+        </a>
+        <a href="Leaderboard.html" class="menu-item">
+            <i class="fas fa-trophy"></i>
+            <span>رتبه بندی</span>
+        </a>
+        <!-- دکمه جایگزین شده بازی -->
+        <a href="http://127.0.0.1:5500/cours/logic/binary-game/index.html" class="menu-item">
+            <i class="fas fa-gamepad"></i>
+            <span>بازی</span>
+        </a>
+        <a href="settings.html" class="menu-item">
+            <i class="fas fa-cog"></i>
+            <span>تنظیمات</span>
+        </a>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>خانه</span>
+        </a>
+        <a href="courses.html" class="nav-item">
+            <i class="fas fa-book"></i>
+            <span>دوره‌ها</span>
+        </a>
+        <a href="search.html" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span>جستجو</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>پروفایل</span>
+        </a>
+    </div>
+</body>
+</html>

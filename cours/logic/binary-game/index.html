@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>بازی عددی کانواس Enginuity</title>
+  <meta name="viewport" content="width=900">
+  <!-- فونت وزیرمتن (اختیاری) -->
+  <link href="https://cdn.fontcdn.ir/Fonts/Vazirmatn/Vazirmatn-Variable-font-face.css" rel="stylesheet">
+  <link rel="stylesheet" href="canvas-game.css">
+  <style>
+    
+    body {
+      margin: 0;
+      background: #141d26 url('./images/background.jpg') center/cover no-repeat;
+      font-family: 'Vazirmatn', Arial, sans-serif;
+      direction: rtl;
+    }
+    .game-container {
+      width: 900px;
+      margin: 40px auto;
+      position: relative;
+    }
+    #game-canvas {
+      display: block;
+      border: 3px solid #22ffd1;
+      background: rgba(0,0,0,0.16);
+      border-radius: 18px;
+      box-shadow: 0 0 30px #22ffd133;
+    }
+    .ui-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: rgba(30,36,54,0.93);
+      margin-top: 2px;
+      border-radius: 0 0 14px 14px;
+    }
+    .lives img {
+      width: 32px;
+      margin-left: 8px;
+    }
+    .score {
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    #answer-input {
+      padding: 10px 16px;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      border: 1.5px solid #22ffd1;
+      outline: none;
+      background: #20263a;
+      color: #caffc2;
+      width: 200px;
+      text-align: center;
+    }
+    #game-over {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 120px;
+      margin: auto;
+      width: 340px;
+      background: #242c3fdd;
+      color: #fff;
+      padding: 36px 20px 24px 20px;
+      border-radius: 20px;
+      text-align: center;
+      z-index: 3;
+      font-size: 1.2rem;
+      box-shadow: 0 6px 30px #22ffd133;
+    }
+    #game-over button {
+      padding: 8px 22px;
+      margin-top: 8px;
+      border-radius: 13px;
+      background: #09e199;
+      color: #033;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<button 
+  onclick="window.location.href='http://127.0.0.1:5500/front/profile.html';"
+  style="
+    background: #f0f4ff;
+    color: #4e5fe0;
+    border: none;
+    border-radius: 24px;
+    padding: 8px 24px;
+    font-size: 16px;
+    font-family: inherit;
+    margin: 10px 0 24px 0;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(78,95,224,0.08);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+">
+    <i class="fas fa-user"></i>
+    بازگشت به پروفایل
+</button>
+
+<body>
+  <div class="game-container">
+    <canvas id="game-canvas" width="820" height="450"></canvas>
+    <div class="ui-panel">
+      <div id="lives" class="lives"></div>
+      <div class="score">امتیاز: <span id="score">0</span></div>
+      <input id="answer-input" type="text" autocomplete="off" placeholder="پاسخ را وارد کن">
+    </div>
+    <div id="game-over" style="display:none;">
+      <h2>🎉 بازی تموم شد!</h2>
+      <div style="margin-bottom:12px;">امتیاز تو: <span id="final-score"></span></div>
+      <div id="best-score-txt" style="margin-bottom:14px;"></div>
+      <button onclick="startGame()">شروع دوباره</button>
+    </div>
+  </div>
+  <script>
+  // منابع و آدرس تصاویر
+  const canvas = document.getElementById("game-canvas");
+  const ctx = canvas.getContext("2d");
+  const input = document.getElementById("answer-input");
+  const livesPanel = document.getElementById("lives");
+  const scorePanel = document.getElementById("score");
+  const gameOverDiv = document.getElementById("game-over");
+  const finalScore = document.getElementById("final-score");
+  const bestScoreTxt = document.getElementById("best-score-txt");
+
+  const enemyImages = [
+      "./images/enemy1.png",
+      "./images/enemy2.png",
+      "./images/enemy3.png",
+      "./images/enemy4.png"
+  ];
+  const heartImage = "./images/heart.png";
+  const background = new Image();
+  background.src = "./images/background.png";
+
+  let enemies = [];
+  let score = 0;
+  let lives = 5, maxLives = 5;
+  let bestScore = 0; // از سرور لود میشه
+  let gameOver = false;
+  let spawnInterval = 1800; // آهسته‌تر (ms)
+  let spawnIntervalId;
+  let userId = localStorage.getItem("userId");
+  if (!userId) window.location.href = "LoginPage.html";
+  let userRecords = {};
+
+  // رکوردهای کاربر را از سرور بخوان
+  async function fetchBestRecord() {
+      let res = await fetch(`http://localhost:3001/users/${userId}`);
+      let user = await res.json();
+      bestScore = user.records?.binaryAction || 0;
+      userRecords = user.records || {};
+  }
+  // به‌روزرسانی رکورد در سرور
+  async function updateBestRecord(newScore) {
+      userRecords.binaryAction = newScore;
+      await fetch(`http://localhost:3001/users/${userId}`, {
+          method: "PATCH",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ records: userRecords })
+      });
+  }
+
+  // تنظیم سختی مرحله
+  function getDifficultyConfig(score) {
+      if (score < 10) return { maxDecimal: 15, minDecimal: 2, minSpeed: 0.6, maxSpeed: 1.3 };
+      if (score < 25) return { maxDecimal: 31, minDecimal: 8, minSpeed: 0.8, maxSpeed: 1.5 };
+      if (score < 50) return { maxDecimal: 63, minDecimal: 16, minSpeed: 0.95, maxSpeed: 1.7 };
+      if (score < 80) return { maxDecimal: 127, minDecimal: 32, minSpeed: 1.1, maxSpeed: 2.1 };
+      return { maxDecimal: 255, minDecimal: 32, minSpeed: 1.25, maxSpeed: 2.35 };
+  }
+
+  // کلاس Enemy با نمایش لیبل و عدد
+  class Enemy {
+      constructor(img, x, y, speed, number, isBinary, isHeart = false) {
+          this.img = img;
+          this.x = x;
+          this.y = y;
+          this.speed = speed;
+          this.number = number;
+          this.isBinary = isBinary;
+          this.isHeart = isHeart;
+          this.width = 62;
+          this.height = 62;
+          this.imgReady = false;
+          this.sprite = new Image();
+          this.sprite.src = img;
+          this.sprite.onload = () => { this.imgReady = true; };
+      }
+      draw(ctx) {
+          if (this.imgReady) {
+              ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
+              // --- عدد بالا ---
+              ctx.save();
+              ctx.font = "bold 24px Tahoma";
+              ctx.textAlign = "center";
+              ctx.fillStyle = this.isHeart ? "#dc143c" : "#4e5fe0";
+              ctx.strokeStyle = "#fff";
+              ctx.lineWidth = 4;
+              let n = this.isBinary ? decToBinary(this.number) : this.number.toString();
+              ctx.strokeText(n, this.x + this.width / 2, this.y - 8);
+              ctx.fillText(n, this.x + this.width / 2, this.y - 8);
+              // --- برچسب پایین ---
+              ctx.font = "bold 13px Tahoma";
+              ctx.textAlign = "center";
+              let tag = this.isHeart ? "HEART" : (this.isBinary ? "BIN" : "DEC");
+              ctx.fillStyle = this.isBinary ? "#0057ab" : "#fa8334";
+              if (this.isHeart) ctx.fillStyle = "#c22";
+              ctx.fillRect(this.x + this.width/2 - 19, this.y + this.height + 3, 38, 19);
+              ctx.fillStyle = "#fff";
+              ctx.fillText(tag, this.x + this.width/2, this.y + this.height + 18);
+              ctx.restore();
+          }
+      }
+  }
+  function decToBinary(n) { return n.toString(2); }
+
+  // جان‌ها
+  function updateLivesPanel() {
+      livesPanel.innerHTML = "";
+      for (let i = 0; i < lives; i++) {
+          const img = document.createElement("img");
+          img.src = heartImage;
+          img.style.width = "32px";
+          img.alt = "heart";
+          livesPanel.appendChild(img);
+      }
+  }
+
+  function spawnEnemy() {
+      let difficulty = getDifficultyConfig(score);
+      let spawnAsHeart = Math.random() < 0.12;
+      let num = Math.floor(Math.random() * (difficulty.maxDecimal - difficulty.minDecimal + 1)) + difficulty.minDecimal;
+      let isBinary = Math.random() < 0.5;
+      let img = spawnAsHeart ? heartImage : enemyImages[Math.floor(Math.random() * enemyImages.length)];
+      let y = Math.floor(Math.random() * (canvas.height - 110)) + 32;
+      let speed = Math.random() * (difficulty.maxSpeed - difficulty.minSpeed) + difficulty.minSpeed;
+      if (spawnAsHeart) isBinary = false;
+      enemies.push(new Enemy(img, -70, y, speed, num, isBinary, spawnAsHeart));
+  }
+
+  function gameLoop() {
+      if (gameOver) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = 0.23;
+      ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = 1;
+      // خط رد شدن دشمن
+      ctx.save();
+      ctx.strokeStyle = "#ff2c7d";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(canvas.width - 68, 0);
+      ctx.lineTo(canvas.width - 68, canvas.height);
+      ctx.stroke();
+      ctx.restore();
+
+      for (let i = 0; i < enemies.length; i++) {
+          enemies[i].x += enemies[i].speed;
+          enemies[i].draw(ctx);
+          if (enemies[i].x + enemies[i].width > canvas.width - 68) {
+              if (!enemies[i].isHeart) loseLife();
+              enemies.splice(i, 1);
+              i--;
+          }
+      }
+      requestAnimationFrame(gameLoop);
+  }
+
+  function loseLife() {
+      lives--;
+      updateLivesPanel();
+      if (lives <= 0) endGame();
+  }
+
+  async function endGame() {
+      gameOver = true;
+      finalScore.textContent = score;
+      if (score > bestScore) {
+          bestScoreTxt.innerHTML = `رکورد جدید! <span style="color:#4e5fe0;font-weight:bold">${score}</span>`;
+          await updateBestRecord(score);
+      } else {
+          bestScoreTxt.innerHTML = `رکورد بهترین امتیازت: <span style="color:#4e5fe0;">${bestScore}</span>`;
+      }
+      gameOverDiv.style.display = "block";
+      input.disabled = true;
+      clearInterval(spawnIntervalId);
+  }
+
+  input.addEventListener("keydown", function(e) {
+      if (e.key !== "Enter" || input.disabled) return;
+      const value = input.value.trim();
+      if (!value) return;
+      let found = false;
+      for (let i = 0; i < enemies.length; i++) {
+          let ans = enemies[i].isBinary ? parseInt(enemies[i].number, 10).toString() : enemies[i].number.toString();
+          if (enemies[i].isBinary && /^[01]+$/.test(enemies[i].number + "")) {
+              ans = parseInt(enemies[i].number + "", 2).toString();
+          }
+          if (value === ans) {
+              if (enemies[i].isHeart) {
+                  if (lives < maxLives) lives++;
+                  updateLivesPanel();
+              } else {
+                  score++;
+                  scorePanel.textContent = score;
+              }
+              enemies.splice(i, 1);
+              found = true;
+              break;
+          }
+          if (!enemies[i].isBinary && /^[01]+$/.test(value)) {
+              if (decToBinary(enemies[i].number) === value) {
+                  if (enemies[i].isHeart) {
+                      if (lives < maxLives) lives++;
+                      updateLivesPanel();
+                  } else {
+                      score++;
+                      scorePanel.textContent = score;
+                  }
+                  enemies.splice(i, 1);
+                  found = true;
+                  break;
+              }
+          }
+      }
+      input.value = "";
+  });
+
+  async function startGame() {
+      input.value = "";
+      lives = maxLives;
+      score = 0;
+      gameOver = false;
+      enemies = [];
+      updateLivesPanel();
+      scorePanel.textContent = "0";
+      gameOverDiv.style.display = "none";
+      input.disabled = false;
+      input.focus();
+      await fetchBestRecord();
+      if (spawnIntervalId) clearInterval(spawnIntervalId);
+      spawnIntervalId = setInterval(() => { if (!gameOver) spawnEnemy(); }, spawnInterval);
+      gameLoop();
+  }
+  window.onload = startGame;
+  </script>
+</body>
+</html>

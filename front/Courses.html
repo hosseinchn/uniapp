@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enginuity - دوره‌ها</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background-color: #f5f7fb; padding: 20px; padding-bottom: 70px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h1 { color: #1a237e; font-size: 24px; }
+        .back-button { color: #4e5fe0; text-decoration: none; display: flex; align-items: center; }
+        .search-bar {
+            background-color: white;
+            border-radius: 10px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .search-bar input { flex: 1; border: none; outline: none; font-size: 16px; margin-right: 10px; }
+        .search-bar i { color: #777; }
+        .course-list { display: flex; flex-direction: column; gap: 15px; }
+        .course-item {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+            transition: box-shadow 0.2s, opacity 0.2s;
+        }
+        .course-item:hover:not(.locked) { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); }
+        .course-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #1a237e; display: flex; align-items: center; gap: 8px;}
+        .course-info { color: #666; font-size: 14px; margin-bottom: 0; }
+        .locked {
+            pointer-events: none;
+            opacity: 0.6;
+            background-color: #ededed;
+        }
+        .soon-label {
+            display: inline-block;
+            background: #bababa;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .lock-icon {
+            color: #a0a0a0;
+            margin-left: 3px;
+            font-size: 17px;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: #777; text-decoration: none; font-size: 12px; transition: color 0.2s;
+        }
+        .nav-item i { font-size: 24px; margin-bottom: 5px; }
+        .nav-item.active, .nav-item:active, .nav-item:focus { color: #4e5fe0; }
+    </style>
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="back-button" title="بازگشت به خانه">
+            <i class="fas fa-arrow-right"></i>
+        </a>
+        <h1>دوره‌ها</h1>
+        <div></div>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="جستجو در بین دوره‌ها...">
+        <i class="fas fa-search"></i>
+    </div>
+
+    <div class="course-list" id="courseList">
+        <!-- لیست دوره‌ها اینجا قرار می‌گیرد -->
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>خانه</span>
+        </a>
+        <a href="courses.html" class="nav-item active">
+            <i class="fas fa-book"></i>
+            <span>دوره‌ها</span>
+        </a>
+        <a href="search.html" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span>جستجو</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>پروفایل</span>
+        </a>
+    </div>
+    <script>
+    const courses = [
+        { key: "qmbni", title: "اصول برنامه‌نویسی", info: "آشنایی با مفاهیم اولیه", link: "/quiz/basic/qmbni.html", locked: false },
+        { key: "qdatastuctr", title: "ساختمان داده", info: "بررسی ساختارهای داده ", link: "/quiz/basic/qdatastuctr.html", locked: true },
+        { key: "qalgritm", title: "الگوریتم‌ها", info: "آشنایی با مبانی طراحی الگوریتم‌ها", link: "/quiz/basic/qalgritm.html", locked: true },
+        { key: "qlogic", title: "مدارهای منطقی", info: "آشنایی با منطق دیجیتال", link: "/quiz/basic/qlogic.html", locked: true },
+        { key: "qmath", title: "ریاضیات گسسته", info: "مفاهیم پایه ریاضیات کامپیوتر", link: "all.html", locked: true },
+        { key: "quizmain", title: "نظریه زبان ها و ماشین ها", info: "مفاهیم امنیتی سیستم‌ها", link: "/quiz/quizmain.html", locked: true },
+        { key: "qcomp", title: "طراحی کامپایلر", info: "نظریه و پیاده‌سازی کامپایلرها", link: "/quiz/basic/qcomp.html", locked: true }
+    ];
+
+    // گرفتن userId از localStorage یا redirect به login
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        window.location.href = 'login.html';
+    }
+
+    function renderCourses(filteredCourses = courses) {
+        const courseList = document.getElementById('courseList');
+        courseList.innerHTML = '';
+        if (!filteredCourses.length) {
+            courseList.innerHTML = '<div style="text-align:center; color:#666;">دوره‌ای یافت نشد.</div>';
+            return;
+        }
+        filteredCourses.forEach(course => {
+            if (!course.locked) {
+                courseList.innerHTML += `
+                    <a href="${course.link}" class="course-item">
+                        <div>
+                            <div class="course-title">${course.title}</div>
+                            <div class="course-info">${course.info}</div>
+                        </div>
+                    </a>
+                `;
+            } else {
+                courseList.innerHTML += `
+                    <div class="course-item locked">
+                        <div>
+                            <div class="course-title">
+                                <i class="fas fa-lock lock-icon"></i>
+                                ${course.title}
+                                <span class="soon-label">به‌زودی</span>
+                            </div>
+                            <div class="course-info">${course.info}</div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    }
+
+    // گرفتن لیست دوره‌ها (بدون پروگرس)
+    document.addEventListener('DOMContentLoaded', function() {
+        renderCourses(courses);
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const value = this.value.trim();
+            let filtered = courses;
+            if (value !== '') {
+                filtered = courses.filter(c =>
+                    c.title.includes(value) || c.info.includes(value)
+                );
+            }
+            renderCourses(filtered);
+        });
+    });
+    </script>
+</body>
+</html>

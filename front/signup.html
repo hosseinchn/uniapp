@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Enginuity - ثبت نام</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        body {background:#f0f4ff;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+        .signup-container {background:#fff;border-radius:14px;box-shadow:0 4px 12px #0001;max-width:400px;width:100%;padding:28px;}
+        .app-title {text-align:center;color:#1a237e;margin-bottom:22px;}
+        .form-group {margin-bottom:14px;}
+        label {display:block;font-weight:bold;margin-bottom:5px;color:#333;font-size:14px;}
+        input,select {
+            width:100%;padding:10px 9px;margin-bottom:2px;
+            border:1px solid #d4d9ff;border-radius:7px;font-size:15px;background:#f8f9ff;
+        }
+        .btn-signup {width:100%;background:#4e5fe0;color:#fff;border:none;border-radius:8px;font-weight:bold;font-size:16px;padding:13px;margin-top:11px;cursor:pointer;transition:.3s;}
+        .btn-signup:hover {background:#2636a8;}
+        .msg-error {background:#ffefef;color:#ae2222;border-radius:7px;padding:10px;text-align:center;margin-bottom:10px;}
+        .msg-success {background:#e8fbe7;color:#227d22;border-radius:7px;padding:10px;text-align:center;margin-bottom:10px;}
+        .login-link {text-align:center;margin-top:20px;}
+        .login-link a {color:#4e5fe0;text-decoration:none;font-weight:bold;}
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="app-title"><h2>ثبت نام</h2></div>
+        <div id="msg"></div>
+        <form id="signup-form" onsubmit="return signup(event)">
+            <div class="form-group">
+                <label for="fullname">نام و نام خانوادگی</label>
+                <input type="text" id="fullname" required>
+            </div>
+            <div class="form-group">
+                <label for="username">نام کاربری</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">ایمیل</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="mobile">شماره همراه</label>
+                <input type="tel" id="mobile" maxlength="11" required>
+            </div>
+            <div class="form-group">
+                <label for="level">مقطع تحصیلی</label>
+                <select id="level" required>
+                    <option value="" disabled selected>انتخاب کنید...</option>
+                    <option>کارشناسی</option>
+                    <option>کارشناسی ارشد</option>
+                    <option>دکتری</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="password">رمز عبور</label>
+                <input type="password" id="password" required minlength="4">
+            </div>
+            <div class="form-group">
+                <label for="password2">تکرار رمز عبور</label>
+                <input type="password" id="password2" required minlength="4">
+            </div>
+            <button class="btn-signup" type="submit">ثبت نام</button>
+        </form>
+        <div class="login-link">
+            <span>حساب کاربری دارید؟ <a href="LoginPage.html">ورود</a></span>
+        </div>
+    </div>
+    <script>
+        function $(id){return document.getElementById(id);}
+        function showMsg(txt, type){$("msg").innerHTML = `<div class="msg-${type}">${txt}</div>`;}
+        function clearMsg(){$("msg").innerHTML='';}
+        async function signup(e){
+            e.preventDefault(); clearMsg();
+            let fullname = $("fullname").value.trim();
+            let username = $("username").value.trim();
+            let email = $("email").value.trim();
+            let mobile = $("mobile").value.trim();
+            let level = $("level").value;
+            let password = $("password").value;
+            let password2 = $("password2").value;
+
+            if(!fullname || !username || !email || !mobile || !level || !password || !password2)
+                return showMsg("همه فیلدها لازم است.","error");
+            if(password.length<4)
+                return showMsg("رمز عبور باید حداقل 4 کاراکتر باشد.","error");
+            if(password!==password2)
+                return showMsg("رمزهای عبور یکسان نیستند.","error");
+
+            // بررسی وجود کاربر
+            let res = await fetch(`http://localhost:3001/users?username=${encodeURIComponent(username)}`);
+            let its = await res.json();
+            if(its.length>0) return showMsg("این نام کاربری قبلاً ثبت شده است!","error");
+
+            // ثبت کاربر جدید
+            let userObj = {fullname, username, email, mobile, level, password};
+            let r = await fetch("http://localhost:3001/users", {
+                method:"POST",
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify(userObj)
+            });
+            if(r.ok){
+                showMsg("ثبت نام موفق! حالا وارد شوید.","success");
+                setTimeout(()=>window.location.href="LoginPage.html",1500);
+            } else showMsg("خطا در ثبت نام!","error");
+            return false;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enginuity - دستاوردها</title>
+    <style>
+        * {margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+        body {background-color: #f5f7fb;padding: 20px;padding-bottom: 80px;}
+        .header {
+            display: flex;justify-content: space-between;align-items: center;margin-bottom: 18px;
+        }
+        .header h1 { color: #1a237e; font-size: 23px;}
+        .back-btn {
+            color: #4e5fe0; text-decoration: none; font-size: 22px;display: flex;align-items:center;
+        }
+        .achievements-stats {
+            background: white; border-radius: 13px; padding: 18px 7px; margin-bottom:18px;
+            box-shadow: 0 1px 8px rgba(78,95,224,0.09); display: flex; justify-content: space-between;
+        }
+        .stat-box {text-align:center;}
+        .stat-value {font-size: 23px;font-weight: bold;color: #4e5fe0;margin-bottom:5px;}
+        .stat-label {font-size: 13px;color:#555;}
+        .section-title {font-size: 17px;font-weight: bold;margin:16px 0 12px;color: #1a237e;}
+        .achievements-grid {
+            display: grid;grid-template-columns: repeat(2, 1fr);gap: 14px;
+        }
+        .achievement-item {
+            background: white; border-radius: 13px; padding:13px 10px; display: flex; align-items: center;
+            box-shadow: 0 2px 9px rgba(34,52,224,0.07); min-height:58px;
+        }
+        .achievement-icon {
+            width: 52px; height:52px; border-radius: 50%; background: #f0f4ff;
+            display: flex;justify-content: center;align-items: center;margin-left: 16px;
+        }
+        .achievement-icon i { font-size: 23px; color: #4e5fe0;}
+        .achievement-info { flex: 1;}
+        .achievement-name { font-weight: bold; margin-bottom: 6px; color: #333;}
+        .achievement-desc { font-size: 12px; color: #666;}
+        .achievement-item.locked {opacity: .6;}
+        .achievement-item.locked .achievement-icon {background:#e0e0e0;}
+        .achievement-item.locked .achievement-icon i {color:#999;}
+        .bottom-nav { position:fixed; bottom:0; left:0;right:0;background:#fff; display:flex;justify-content:space-around;
+            padding:15px 0 10px 0; box-shadow:0 -2px 10px rgba(0,0,0,0.09);}
+        .nav-item { display: flex; flex-direction:column;align-items:center;color:#777;text-decoration:none;font-size:13px;}
+        .nav-item i { font-size:23px; margin-bottom:4px;}
+        .nav-item.active {color:#4e5fe0;}
+        @media(max-width:650px){.achievements-grid{gap:8px;}}
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <a href="profile.html" class="back-btn" title="بازگشت"><i class="fas fa-arrow-right"></i></a>
+        <h1>دستاوردها</h1>
+        <span></span>
+    </div>
+
+    <div class="achievements-stats">
+        <div class="stat-box">
+            <div class="stat-value" id="stat-earned">0</div>
+            <div class="stat-label">کسب شده</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value" id="stat-locked">0</div>
+            <div class="stat-label">قفل شده</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value" id="stat-percent">0%</div>
+            <div class="stat-label">پیشرفت</div>
+        </div>
+    </div>
+
+    <div class="section-title">همه دستاوردهای شما</div>
+    <div class="achievements-grid" id="achGrid">
+        <!-- با جاوااسکریپت پر میشه -->
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>خانه</span></a>
+        <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>دوره‌ها</span></a>
+        <a href="search.html" class="nav-item"><i class="fas fa-search"></i><span>جستجو</span></a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>پروفایل</span></a>
+    </div>
+    <script>
+        // فرض: همه دستاوردهای ممکن (در برنامه واقعی میشه از سرور یا یک فایل مجزا لود کرد)
+        const ALL_ACHIEVEMENTS = [
+            { key:'starter', name:'شروع کننده', icon:'star', desc:'اولین درس را تکمیل کردید'},
+            { key:'climber', name:'کوهنورد', icon:'trophy', desc:'به ۵۰٪ اولین دوره رسیدید' },
+            { key:'exampro', name:'متخصص آزمون', icon:'medal', desc:'۵ آزمون با نمره کامل'},
+            { key:'thinker', name:'متفکر برتر', icon:'brain', desc:'۱۰ بازی دراگ اند دراپ را کامل کنید'},
+            { key:'nightowl', name:'جغد شب', icon:'moon', desc:'یک درس را ساعت ۱ بامداد بگذرانید'},
+            { key:'streak7', name:'هفت روز پیوسته', icon:'fire', desc:'حداقل ۷ روز متوالی تمرین داشتی'},
+            { key:'firstquiz', name:'اولین آزمون', icon:'check', desc:'اولین کوییز را گذراندی'},
+            { key:'hardworker', name:'پرتلاش', icon:'bolt', desc:'۱۰ درس را در یک روز مطالعه کن'},
+            // ... می‌توانید تعداد دلخواه اضافه کنید
+        ];
+
+        // واکشی و نمایش آمار و لیست دستاوردها
+        window.onload = function() {
+            const userId = localStorage.getItem('userId');
+            if (!userId) { window.location.href = 'LoginPage.html'; return; }
+            fetch(`http://localhost:3001/users/${userId}`)
+                .then(res => res.json())
+                .then(user => {
+                    // دستاوردهای به دست آمده
+                    const earned = (user.achievements || []).map(a => a.key);
+                    // دسته‌بندی
+                    const earnedCount = earned.length;
+                    const totalCount = ALL_ACHIEVEMENTS.length;
+                    const lockedCount = totalCount - earnedCount;
+                    // درصد پیشرفت
+                    document.getElementById('stat-earned').textContent = earnedCount;
+                    document.getElementById('stat-locked').textContent = lockedCount;
+                    document.getElementById('stat-percent').textContent = totalCount ? Math.round(100*earnedCount/totalCount)+"%" : "-";
+                    // لیست کامل
+                    const achGrid = document.getElementById('achGrid');
+                    achGrid.innerHTML = "";
+                    ALL_ACHIEVEMENTS.forEach(a=>{
+                        const owned = earned.includes(a.key);
+                        achGrid.innerHTML += `
+                            <div class="achievement-item${owned?"":" locked"}" title="${a.name}">
+                                <div class="achievement-icon"><i class="fas fa-${a.icon}"></i></div>
+                                <div class="achievement-info">
+                                    <div class="achievement-name">${a.name}</div>
+                                    <div class="achievement-desc">${a.desc}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    if(!ALL_ACHIEVEMENTS.length)
+                        achGrid.innerHTML = "<div style='text-align:center;color:#888;'>هنوز آرشیو دستاوردها تعریف نشده.</div>";
+                })
+                .catch(()=>{
+                    alert("دسترسی به سرور ممکن نیست! لطفاً ارتباط خود را چک کنید.");
+                    window.location.href = "dashboard.html";
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enginuity - جستجو</title>
+    <style>
+        * {margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif;}
+        body {background: #f5f7fb; padding: 20px; padding-bottom: 70px;}
+        .header {display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+        .header h1 {color: #1a237e; font-size: 24px;}
+        .back-button {color: #4e5fe0; text-decoration: none; display: flex; align-items: center;}
+        .search-bar {
+            display: flex; align-items: center; background: #fff; border-radius: 12px;
+            padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 18px;
+        }
+        .search-bar input {
+            flex: 1; border: none; outline: none; font-size: 15px; color: #333;
+            background: transparent; margin-left: 10px;
+        }
+        .search-bar button {
+            background: #4e5fe0; color: #fff; border: none; border-radius: 8px;
+            padding: 8px 17px; font-size: 15px; cursor: pointer; transition: background .24s;
+        }
+        .search-bar button:hover {background: #3949ab;}
+        .results-container {
+            background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 15px 7px 5px 7px; min-height: 60px;
+        }
+        .result-item {
+            display: flex; align-items: center; gap: 12px; padding: 11px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .result-item:last-child {border-bottom: none;}
+        .result-item i {font-size: 19px; color: #4e5fe0;}
+        .result-title {font-size: 15px; color: #222;}
+        .result-type {font-size: 12px; color: #666; margin-right: 9px;}
+        .no-result {color: #999; font-size: 15px; padding: 18px 3px;}
+        .bottom-nav {position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+            display: flex; justify-content: space-around; padding: 14px 0 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.10);}
+        .nav-item {display: flex; flex-direction: column; align-items: center; color: #777; text-decoration: none; font-size: 13px;}
+        .nav-item i {font-size: 23px; margin-bottom: 3px;}
+        .nav-item.active {color: #4e5fe0;}
+        @media (max-width: 480px) {.header h1{font-size:18px;}}
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="back-button"><i class="fas fa-arrow-right"></i></a>
+        <h1>جستجو</h1>
+        <span></span>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="عبارت مورد نظر را وارد کنید...">
+        <button onclick="doSearch()">جستجو</button>
+    </div>
+
+    <div class="results-container" id="resultsBox">
+        <div class="no-result">نتیجه‌ای وارد نشده است.</div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>خانه</span></a>
+        <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>دوره‌ها</span></a>
+        <a href="search.html" class="nav-item active"><i class="fas fa-search"></i><span>جستجو</span></a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>پروفایل</span></a>
+    </div>
+
+    <script>
+    // --- demo data: دوره‌ها - درس‌ها - پست‌ها
+    const DUMMY_DATA = [
+        {type: 'course', icon: 'book', title: 'اصول برنامه‌نویسی', sub: 'دوره'},
+        {type: 'lesson', icon: 'file-alt', title: 'حلقه‌های تودرتو', sub: 'درس از اصول برنامه‌نویسی'},
+        {type: 'lesson', icon: 'file-alt', title: 'مرور ساختمان داده', sub: 'درس از ساختمان داده'},
+        {type: 'forum', icon: 'comments', title: 'تفاوت for و while؟', sub: 'بحث انجمن'},
+        {type: 'course', icon: 'book', title: 'الگوریتم‌ها', sub: 'دوره'},
+        {type: 'forum', icon: 'comments', title: 'شروع مسابقه جدید', sub: 'پست فروم'},
+        {type: 'course', icon: 'book', title: 'ریاضیات گسسته', sub: 'دوره'},
+    ];
+
+    // --- جستجوی ساده (از سرور JSON Server یا داده تستی)
+    function doSearch() {
+        const inp = document.getElementById('searchInput').value.trim();
+        if (inp === '') {
+            document.getElementById('resultsBox').innerHTML = `<div class="no-result">عبارتی وارد نکردید.</div>`;
+            return;
+        }
+        //--- فرض کن اینجا fetch از سرور داری، الان روی داده نمونه:
+        // برای سرور واقعی می‌توان fetch به server داده دوره/درس/پست نوشت و نتایج را مپ کرد
+        // fetch('http://localhost:3001/all?search=' + encodeURIComponent(inp))
+        const found = DUMMY_DATA.filter(
+            x => x.title.includes(inp) || (x.sub && x.sub.includes(inp))
+        );
+        if(found.length === 0) {
+            document.getElementById('resultsBox').innerHTML = `<div class="no-result">نتیجه‌ای یافت نشد.</div>`;
+        } else {
+            document.getElementById('resultsBox').innerHTML = found.map(
+                x => `<div class="result-item">
+                    <i class="fas fa-${x.icon}"></i>
+                    <div>
+                        <div class="result-title">${x.title}</div>
+                        <div class="result-type">${x.sub}</div>
+                    </div>
+                </div>`
+            ).join('');
+        }
+    }
+
+    // برای UX بهتر: کلید Enter روی اینپوت فعال کن
+    document.getElementById('searchInput').addEventListener('keydown', function(e){
+        if(e.key === 'Enter') doSearch();
+    });
+
+    // -- اطمینان از ورود کاربر
+    window.onload = function(){
+        if(!localStorage.getItem('userId')){
+            window.location.href = "LoginPage.html";
+        }
+    };
+    </script>
+</body>
+</html>

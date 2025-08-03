@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Enginuity | سوابق و رکوردها</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+<style>
+*{box-sizing:border-box;font-family:Vazirmatn,Arial,sans-serif;}
+body{background:#f5f7fb;padding:0 0 90px 0;}
+.header{display:flex;justify-content:space-between;align-items:center;padding:18px 20px 5px 20px;}
+.header h1{color:#1a237e;font-size:22px;}
+.back-button{color:#4e5fe0;text-decoration:none;}
+.records-container{
+  max-width:500px;background:#fff;margin:12px auto 0 auto;padding:21px 12px 13px 12px;
+  border-radius:15px;box-shadow:0 2px 8px rgba(78,95,224,.07);
+}
+.summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px;}
+.summary-card{
+  flex:1;display:flex;flex-direction:column;align-items:center;margin:0 5px;
+  background:#e8f0fe;border-radius:10px;padding:13px 6px;min-width:80px;
+}
+.summary-card i{font-size:25px;margin-bottom:2px;color:#4e5fe0;}
+.summary-label{color:#567;}
+.summary-value{font-weight:bold;font-size:18px;color:#122663;}
+.record-list{margin:18px 0 0 0;list-style:none;padding:0;}
+.record-item{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#f4f8ff;margin-bottom:7px;padding:8px 11px 9px 8px;
+  border-radius:8px;transition:.15s;border-right:3.5px solid #4e5fe04d;
+}
+.record-item:hover{box-shadow:0 4px 12px #2941b20e;}
+.r-left{display:flex;align-items:center;gap:12px;}
+.record-item i{font-size:19px;color:#90a1ff;}
+.record-score{background:#4e5fe0;color:#fff;font-weight:bold;border-radius:3px;padding:2px 7px 2px 7px;font-size:15px;margin-left:3px;}
+.record-meta{color:#888;font-size:12px;}
+.chart-bar-bg{height:11px;width:100%;background:#e3eafe;border-radius:8px;overflow:hidden;margin:6px 0 18px 0;}
+.chart-bar{height:100%;background:linear-gradient(90deg,#4e5fe0,#38b7d6);border-radius:6px;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;
+      padding: 14px 0 8px 0;box-shadow:0 -2px 10px rgba(0,0,0,0.10);}
+.nav-item{display:flex;flex-direction:column;align-items:center;color:#777;text-decoration:none;font-size:13px;}
+.nav-item i{font-size:23px;margin-bottom:2px;}
+.nav-item.active{color:#4e5fe0;}
+@media (max-width:500px){.records-container{margin:0 2px;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <a href="profile.html" class="back-button"><i class="fas fa-arrow-right"></i></a>
+  <h1>رکوردها و سوابق</h1>
+  <span></span>
+</div>
+<div class="records-container">
+  <div class="summary-row">
+      <div class="summary-card">
+        <i class="fas fa-star"></i>
+        <span class="summary-label">بهترین نمره آزمون</span>
+        <span class="summary-value" id="bestScore">--</span>
+      </div>
+      <div class="summary-card">
+        <i class="fas fa-trophy"></i>
+        <span class="summary-label">کل آزمون‌ها</span>
+        <span class="summary-value" id="quizCount">--</span>
+      </div>
+      <div class="summary-card">
+        <i class="fas fa-gamepad"></i>
+        <span class="summary-label">امتیاز بازی‌ها</span>
+        <span class="summary-value" id="gameScore">--</span>
+      </div>
+  </div>
+  <div>
+    <div style="margin-bottom:8px;font-size:14px;color:#1a237e;">درصد پیشرفت کلی</div>
+    <div class="chart-bar-bg"><div id="progressBar" class="chart-bar" style="width:38%"></div></div>
+  </div>
+  <div style="font-size:14px;margin-top:9px;color:#1a237e;">آخرین رکوردها</div>
+  <ul class="record-list" id="recordList">
+    <!-- رکوردها اینجا نمایش داده می‌شود -->
+  </ul>
+  <div id="noRecord" style="text-align:center;color:#888;padding-top:14px;display:none">هنوز رکورد ثبتی ندارید.</div>
+</div>
+<div class="bottom-nav">
+    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>خانه</span></a>
+    <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>دوره‌ها</span></a>
+    <a href="search.html" class="nav-item"><i class="fas fa-search"></i><span>جستجو</span></a>
+    <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>پروفایل</span></a>
+</div>
+<script>
+let DUMMY_DATA = {
+  quizzesDone: [
+    {title:"مبانی کامپیوتر - آزمون فصل ۲", score:90, date:"۱۴۰۳/۰۴/۰۷"},
+    {title:"ساختمان داده - تست پایانی", score:80, date:"۱۴۰۳/۰۳/۳۰"},
+    {title:"الگوریتم‌ها - تمرین", score:68, date:"۱۴۰۳/۰۲/۲۵"},
+    {title:"دیتابیس - فصل ۱", score:75, date:"۱۴۰۳/۰۲/۰۳"},
+  ],
+  games: [
+    {title:"مسابقه تایپ", record:1500, date:"۱۴۰۳/۰۳/۱۵"},
+    {title:"بازی لغت", record:980, date:"۱۴۰۳/۰۳/۱۶"}
+  ],
+  progress: {percent:44}
+};
+// سیموله دیتا، برای سرور واقعی خط‌های fetch فعال کن
+// let userId = localStorage.getItem('userId');
+// fetch(`http://localhost:3001/users/${userId}`).then(...)
+
+function showRecords(){
+  // مجموع و بهترین نمره آزمون
+  let quizzes = DUMMY_DATA.quizzesDone ?? [];
+  let bestScore = quizzes.length ? Math.max(...quizzes.map(q=>q.score)) : "--";
+  let quizCount = quizzes.length;
+  document.getElementById('bestScore').textContent = bestScore!=="--" ? bestScore : "--";
+  document.getElementById('quizCount').textContent = quizCount || "--";
+  // مجموع امتیاز یا رکورد بازی‌ها
+  let games = DUMMY_DATA.games ?? [];
+  let gameScore = games.reduce((s,g)=>s+g.record, 0);
+  document.getElementById('gameScore').textContent = games.length ? gameScore : "--";
+
+  // پیشرفت کلی
+  document.getElementById('progressBar').style.width = (DUMMY_DATA.progress?.percent || 0)+'%';
+
+  // فهرست رکوردها
+  let records = [
+      ...quizzes.map(q=>({
+         type:"quiz", icon:"fa-check-circle", title:q.title, value:q.score, meta:"آزمون", date:q.date, color:"#38b7d6"
+       })),
+      ...games.map(g=>({
+         type:"game", icon:"fa-gamepad", title:g.title, value:g.record, meta:"رکورد بازی", date:g.date, color:"#13bfa7"
+       }))
+  ];
+  // برحسب تاریخ مثال (ساده)، می‌توانید بر اساس db واقعی بیشتر گسترش دهید
+  records = records.sort((a,b)=>b.date.localeCompare(a.date));
+  let rl = document.getElementById('recordList');
+  rl.innerHTML = records.map(r=>
+    `<li class="record-item">
+      <div class="r-left"><i class="fas ${r.icon}" style="color:${r.color}"></i>
+      <div>
+        <div>${r.title}</div>
+        <div class="record-meta">${r.meta} | ${r.date}</div>
+      </div></div>
+      <div class="record-score">${r.value}</div>
+    </li>`
+  ).join('');
+  document.getElementById('noRecord').style.display = records.length ? 'none' : 'block';
+}
+
+window.onload = function(){
+  if(!localStorage.getItem('userId')) location.href="LoginPage.html";
+  showRecords();
+}
+</script>
+</body>
+</html>

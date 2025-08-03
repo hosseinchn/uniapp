@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیشرفت درس مبانی کامپیوتر و برنامه‌نویسی</title>
+    <style>
+        body { font-family: Vazir, Tahoma, Arial, sans-serif; background: #f5f7fb; margin:0; padding:30px; }
+        .container { background: #fff; border-radius: 10px; box-shadow: 0 4px 16px #0001; padding: 36px 16px 36px 16px;}
+        h1 { color: #1a237e; font-size: 22px; margin-bottom: 25px;}
+        .progress-bar-container {
+            background: #e0e0e0; border-radius: 8px; margin: 10px 0 25px 0; height:14px; width: 100%; box-shadow: 0 2px 10px #0001;
+        }
+        .progress-bar {
+            height: 100%; border-radius: 8px; background: linear-gradient(90deg,#4e72e0 40%,#00c0ae 100%);
+            transition: 0.5s all;
+        }
+        .progress-text { font-size: 14px; color: #4e72e0; margin-bottom: 0.25em; text-align: left;direction:ltr;}
+        .step { margin-bottom: 12px; }
+        .step button {
+            background: #ebebff; color: #1a237e; font-weight:bold; border: none; outline: none; width:100%;
+            padding:10px 0; border-radius: 8px; cursor: pointer; text-align: right; font-size: 16px; margin-bottom: 3px;
+        }
+        .step .content { display: none; padding: 8px 10px 3px 10px;}
+        .step.active .content { display: block; }
+        .step ul {
+            margin-bottom:10px;
+        }
+        .step li {
+            padding: 4px 0 2px 0;
+        }
+        .step a {
+            color: #222;
+            text-decoration: underline;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>مراحل یادگیری درس مبانی کامپیوتر و برنامه‌نویسی</h1>
+    <div class="progress-text">درصد پیشرفت شما: <span id="progPercent">0</span>٪</div>
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progBar" style="width:0%"></div>
+    </div>
+<!-- ==== مراحل یادگیری شما ==== -->
+    <!-- همان کد مراحل شما -->
+    <!-- ... 1 ... -->
+    <div class="step">
+        <button onclick="toggleContent(this)">۱. مقدمه و آشنایی با کامپیوتر</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/کامپیوتر چیست و انواع آن.html">کامپیوتر چیست و انواع آن</a></li>
+                <li><a href="/cours/mbani/سخت‌افزار، نرم‌افزار و اجزای اصلی کامپیوتر.html">سخت‌افزار، نرم‌افزار و اجزای اصلی کامپیوتر</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="step">
+        <button onclick="toggleContent(this)">۲. نمایش داده‌ها و سیستم‌های عددی</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/سیستم‌های عددی و تبدیل مبناها.html">سیستم‌های عددی و تبدیل مبناها</a></li>
+                <li><a href="/cours/mbani/روش‌های نمایش داده (کدینگ، کد Gray، کد ASCII).html">روش‌های نمایش داده (کدینگ، کد Gray، کد ASCII)</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="step">
+        <button onclick="toggleContent(this)">۳. مبانی الگوریتم و فلوچارت</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/الگوریتم چیست؟.html">الگوریتم چیست؟</a></li>
+                <li><a href="/cours/mbani/فلوچارت و نمادهای آن.html">فلوچارت و نمادهای آن</a></li>
+                <li><a href="/cours/mbani/نمونه الگوریتم و تبدیل به فلوچارت.html">نمونه الگوریتم و تبدیل به فلوچارت</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="step">
+        <button onclick="toggleContent(this)">۴. مبانی زبان‌های برنامه‌نویسی</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/مقدمه‌ای بر زبان‌های برنامه‌نویسی.html">مقدمه‌ای بر زبان‌های برنامه‌نویسی</a></li>
+                <li><a href="/cours/mbani/نوشتن اولین برنامه (با زبان هدف مثلا C یا Python).html">نوشتن اولین برنامه (با زبان هدف مثلا C یا Python)</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="step">
+        <button onclick="toggleContent(this)">۵. ساختارهای کنترلی (شرط و حلقه)</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/دستورات شرطی (if, else, switch).html">دستورات شرطی (if, else, switch)</a></li>
+                <li><a href="/cours/mbani/حلقه‌ها (for, while, do-while).html">حلقه‌ها (for, while, do-while)</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="step">
+        <button onclick="toggleContent(this)">۶. آرایه‌ها و لیست‌ها</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/آشنایی با آرایه‌ها.html">آشنایی با آرایه‌ها</a></li>
+                <li><a href="/cours/mbani/آشنایی با لیست و کاربرد آن.html">آشنایی با لیست و کاربرد آن</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="step">
+        <button onclick="toggleContent(this)">۷. توابع و برنامه‌نویسی ماژولار</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/تعریف و استفاده از توابع.html">تعریف و استفاده از توابع</a></li>
+                <li><a href="/cours/mbani/برنامه‌نویسی ماژولار و مزایا.html">برنامه‌نویسی ماژولار و مزایا</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="step">
+        <button onclick="toggleContent(this)">۸. مفاهیم مقدماتی ساختار داده</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/آشنایی با ساختار داده.html">آشنایی با ساختار داده</a></li>
+                <li><a href="/cours/mbani/لیست، پشته و صف (Basics).html">لیست، پشته و صف (Basics)</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="step">
+        <button onclick="toggleContent(this)">۹. ورودی/خروجی و مدیریت فایل</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/خواندن و نوشتن داده.html">خواندن و نوشتن داده</a></li>
+                <li><a href="/cours/mbani/مدیریت فایل‌ها.html">مدیریت فایل‌ها</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="step">
+        <button onclick="toggleContent(this)">۱۰. آشنایی با اشکال‌زدایی و رفع خطا</button>
+        <div class="content">
+            <ul>
+                <li><a href="/cours/mbani/مفاهیم خطا و نحوه اشکال‌زدایی.html">مفاهیم خطا و نحوه اشکال‌زدایی</a></li>
+                <li><a href="/cours/mbani/رایج‌ترین خطاهای مبتدیان و شیوه حل آن‌ها.html">رایج‌ترین خطاهای مبتدیان و شیوه حل آن‌ها</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+// آکاردئون مراحل
+function toggleContent(btn) {
+    var parent = btn.parentNode;
+    parent.classList.toggle("active");
+}
+
+// گرفتن اسامی همه دروسی که لینک (a) دارند
+function getAllLessonNames() {
+    let links = document.querySelectorAll('.step .content ul li a');
+    let names = [];
+    links.forEach(a => names.push(a.textContent.trim()));
+    return names;
+}
+
+// گرفتن userId از localStorage یا انتقال به صفحه ورود
+const userId = localStorage.getItem('userId');
+if (!userId) window.location.href = 'login.html';
+
+// گرفتن اطلاعات کاربر از json-server
+fetch('http://localhost:3001/users/' + userId)
+    .then(r => r.json())
+    .then(user => {
+        // لیست همه دروس این صفحه (فقط دروس لینک‌دار)
+        const lessons = getAllLessonNames();
+        const lessonCount = lessons.length;
+
+        // پر کردن نمرات دروس گذشته‌شده از user.quizRecords
+        let totalScore = 0;
+        lessons.forEach(name => {
+            if (user.quizRecords && user.quizRecords[name] && typeof user.quizRecords[name].score === 'number') {
+                let score = user.quizRecords[name].score || 0;
+                if (score > 100) score = 100;
+                totalScore += score;
+            }
+        });
+
+        // درصد پیشرفت (عددی صحیح)
+        let prog = Math.round((totalScore / (lessonCount * 100)) * 100);
+        if (prog > 100) prog = 100;
+        document.getElementById('progPercent').innerText = prog;
+        document.getElementById('progBar').style.width = prog + '%';
+    })
+    .catch(e => {
+        document.getElementById('progPercent').innerText = '0';
+        document.getElementById('progBar').style.width = '0%';
+    });
+</script>
+</body>
+</html>

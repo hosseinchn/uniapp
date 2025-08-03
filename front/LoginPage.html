@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enginuity - ورود</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body {
+            background-color: #f0f4ff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-container {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 14px rgba(70, 90, 220, 0.08);
+            max-width: 390px;
+            width: 100%;
+            padding: 32px 24px 18px 24px;
+        }
+        .app-title {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .app-title h1 {
+            color: #1a237e;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .app-title p {
+            font-size: 15px;
+            color: #495;
+            letter-spacing: .5px;
+            margin-bottom: 6px;
+        }
+        .form-group { margin-bottom: 18px; }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #d0d5e9;
+            font-size: 15px;
+            background-color: #f7f9ff;
+        }
+        .btn-login {
+            width: 100%;
+            background-color: #4e5fe0;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 13px 0;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.25s;
+        }
+        .btn-login:hover { background: #1a237e; }
+        .signup-link {
+            text-align: center;
+            margin-top: 18px;
+        }
+        .signup-link a {
+            color: #4050e7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .terms {
+            color: #888;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 22px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="app-title">
+            <h1>Enginuity</h1>
+            <p>ورود به پنل آموزش مهندسی کامپیوتر</p>
+        </div>
+
+        <form id="login-form" onsubmit="login(event);">
+            <div class="form-group">
+                <label for="login-username">نام کاربری</label>
+                <input type="text" id="login-username" required autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="login-password">رمز عبور</label>
+                <input type="password" id="login-password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-login">ورود</button>
+        </form>
+        <div class="signup-link">
+            <p>حساب کاربری ندارید؟ <a href="signup.html">ثبت نام</a></p>
+        </div>
+        <div class="terms">
+            <p>با ورود، شما با شرایط استفاده و سیاست حریم خصوصی ما موافقت می‌کنید.</p>
+        </div>
+    </div>
+<script>
+async function login(event) {
+    event.preventDefault();
+    const username = document.getElementById("login-username").value.trim();
+    const password = document.getElementById("login-password").value.trim();
+
+    if (!username || !password) {
+        alert("لطفاً نام کاربری و رمز عبور را وارد کنید.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`http://localhost:3001/users?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+        const users = await res.json();
+
+        if (users.length > 0) {
+            // ذخیره id کاربر در localStorage برای صفحات بعدی
+            localStorage.setItem('userId', users[0].id);
+            alert("ورود موفقیت‌آمیز بود :)");
+            window.location.href = "profile.html"; // یا dashboard.html طبق ساختار شما
+        } else {
+            alert("نام کاربری یا رمز عبور اشتباه است!");
+        }
+    } catch (err) {
+        alert("خطا در ارتباط با سرور! لطفا اتصال اینترنت و JSON Server را چک کنید.");
+    }
+}
+</script>
+</body>
+</html>
