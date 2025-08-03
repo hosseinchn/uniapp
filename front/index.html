@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enginuity - خانه</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f7fb;
+            min-height: 100vh;
+            padding-bottom: 80px; /* برای bottom nav */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-container {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+            padding: 30px 20px 40px 20px;
+            background: white;
+            box-shadow: 0 4px 24px 0 rgba(44, 62, 216, 0.10);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
+            margin-bottom: 16px;
+        }
+        .site-title {
+            color: #4e5fe0;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(44,62,216,0.10);
+        }
+        .site-desc {
+            color: #222b45;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 32px;
+            line-height: 2.2rem;
+        }
+        .join-btn {
+            background-color: #4e5fe0;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 16px 0;
+            border: none;
+            border-radius: 14px;
+            width: 90%;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 5px 19px -4px #4e5fe032;
+            margin-top: 8px;
+            margin-bottom: 12px;
+        }
+        .join-btn:hover {
+            background-color: #3949ab;
+        }
+        /* Bottom Nav Styles */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 14px 0;
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+            z-index: 20;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #777;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .nav-item i {
+            font-size: 25px;
+            margin-bottom: 4px;
+        }
+        .nav-item.active {
+            color: #4e5fe0;
+        }
+    </style>
+    <!-- آیکون‌های FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="site-title">انجینویتی</div>
+        <div class="site-desc">
+            به پلتفرم یادگیری تعاملی خوش آمدید!<br>
+            مهارت‌ها را با بازی و آزمون تقویت کن و دستاوردهایت را بساز.<br>
+            همین الان ثبت‌نام کن و وارد رقابت شو 🚀
+        </div>
+        <a href="signup.html" style="width:100%;text-decoration:none;">
+            <button class="join-btn">
+                الان عضو شوید
+            </button>
+        </a>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>خانه</span>
+        </a>
+        <a href="courses.html" class="nav-item">
+            <i class="fas fa-book"></i>
+            <span>دوره‌ها</span>
+        </a>
+        <a href="search.html" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span>جستجو</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>پروفایل</span>
+        </a>
+    </div>
+</body>
+</html>
